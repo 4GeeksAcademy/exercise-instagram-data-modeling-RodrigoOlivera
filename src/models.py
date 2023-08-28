@@ -9,9 +9,8 @@ Base = declarative_base()
 
 class FollowersUser(Base):
     __tablename__ = 'FollowersUser'
-    user_id = Column(Integer, ForeignKey(
-        'user.id'), primary_key=True)
-    follower_id = Column(Integer, ForeignKey('follower.id'), primary_key=True)
+    user_from_id = Column(Integer, ForeignKey('user.id'), primary_key=True)
+    user_to_id = Column(Integer, ForeignKey('user.id'), primary_key=True)
 
 class User(Base):
     __tablename__ = 'user'
@@ -20,19 +19,13 @@ class User(Base):
     first_name= Column(String(250))
     last_name= Column(String(250))
     email= Column(String(100), unique=True)
+    relationship("FollowersUser")
 
 
     # Here we define columns for the table person
     # Notice that each column is also a normal Python instance attribute.
 
 
-class Follower(Base):
-    __tablename__ = 'follower'
-    id = Column(Integer,primary_key=True,autoincrement=True)
-
-
-    # Here we define columns for the table person
-    # Notice that each column is also a normal Python instance attribute.
 
 
 class Post(Base):
