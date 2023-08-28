@@ -1,32 +1,89 @@
 import os
 import sys
-from sqlalchemy import Column, ForeignKey, Integer, String
-from sqlalchemy.orm import relationship, declarative_base
+from sqlalchemy import Column, ForeignKey, Integer, String,DATE,Table
+from sqlalchemy.orm import relationship, declarative_base,backref
 from sqlalchemy import create_engine
 from eralchemy2 import render_er
 
 Base = declarative_base()
 
-class Person(Base):
-    __tablename__ = 'person'
+class FollowersUser(Base):
+    __tablename__ = 'FollowersUser'
+    user_id = Column(Integer, ForeignKey(
+        'user.id'), primary_key=True)
+    follower_id = Column(Integer, ForeignKey('follower.id'), primary_key=True)
+
+class User(Base):
+    __tablename__ = 'user'
+    id= Column(Integer,primary_key=True,autoincrement=True)
+    username= Column(String(250),nullable=False)
+    first_name= Column(String(250))
+    last_name= Column(String(250))
+    email= Column(String(100), unique=True)
+
+
     # Here we define columns for the table person
     # Notice that each column is also a normal Python instance attribute.
-    id = Column(Integer, primary_key=True)
-    name = Column(String(250), nullable=False)
 
-class Address(Base):
-    __tablename__ = 'address'
-    # Here we define columns for the table address.
+
+class Follower(Base):
+    __tablename__ = 'follower'
+    id = Column(Integer,primary_key=True,autoincrement=True)
+
+
+    # Here we define columns for the table person
     # Notice that each column is also a normal Python instance attribute.
-    id = Column(Integer, primary_key=True)
-    street_name = Column(String(250))
-    street_number = Column(String(250))
-    post_code = Column(String(250), nullable=False)
-    person_id = Column(Integer, ForeignKey('person.id'))
-    person = relationship(Person)
 
+
+class Post(Base):
+    __tablename__ = 'post'
+    id = Column(Integer,primary_key=True,autoincrement=True)
+    user = relationship("User")
+    user_id = Column(Integer,ForeignKey("user.id"),nullable=False)
+
+
+class Comment(Base):
+    __tablename__ = 'comment'
+    id = Column(Integer,primary_key=True,autoincrement=True)
+    Comment = Column(String(500),nullable=False)
+
+    user = relationship("User")
+    author_id = Column(Integer,ForeignKey("user.id"), nullable=False)
+
+    post = relationship("Post")
+    post_id = Column(Integer,ForeignKey("post.id"), nullable=False)
+
+class History(Base):
+    __tablename__ = 'history'
+    id = Column(Integer,primary_key=True,autoincrement=True)
+    user = relationship("User")
+    id_user = Column(Integer,ForeignKey("user.id"), nullable=False)
+    Init_Date = Column(DATE,nullable=False)
     def to_dict(self):
         return {}
+    
+
+class Media(Base):
+    __tablename__ = 'media'
+    id = Column(Integer,primary_key=True,autoincrement=True)
+    type = Column(String(255),nullable=False)
+    url = Column(String(250),nullable=False)
+    post = relationship("Post")
+    post_id = Column(Integer,ForeignKey("post.id"), nullable=False)
+    history = relationship("history")
+    history_id = Column(Integer,ForeignKey("history.id"), nullable=False)
+
+
+class Like(Base):
+    __tablename__ = 'Like'
+    id = Column(Integer,primary_key=True,autoincrement=True)
+    user = relationship("User")
+    id_user = Column(Integer,ForeignKey("user.id"), nullable=False)
+    post = relationship("Post")
+    id_post = Column(Integer,ForeignKey("post.id"), nullable=False)
+    history = relationship("History")
+    id_history = Column(Integer,ForeignKey("history.id"), nullable=False)
+
 
 ## Draw from SQLAlchemy base
 try:
